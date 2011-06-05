@@ -1,0 +1,50 @@
+exports.name = Mustache.name;
+exports.version = Mustache.version;
+
+exports.to_html = function() {
+  return Mustache.to_html.apply(this, arguments);
+};
+
+exports.compile = function (source, options) {
+    if (typeof source === 'string') {
+        return function (options) {
+            var app = options.app,
+                fs = require('fs'),
+                path = require('path'),
+                partials = {},
+                extension = options.extension || '.mustache',
+                regex = new RegExp(Mustache.otag + "(=|!|>|\\{|%)?([^\\/#\\^]+?)\\1?" +
+                        Mustache.ctag + '+', 'g'),
+                find_partials = function (source) {
+                    while ((result = regex.exec(source)) !== null) {
+                        if (result[1] === '>' && result[2] !== 'yield') {
+                            partials[result[2]] = fs.readFileSync(
+                                path.join(app.set('views'), result[2] +
+                                extension), 'utf8');
+                                
+                            find_partials(partials[result[2]]);
+                        }
+                    }
+                },
+                result;
+            
+            if (app.set('view options').layout) {
+                partials['yield'] = source;
+                source = fs.readFileSync(path.join(app.set('views'), 'layout' +
+                         extension), 'utf8');
+                         
+                find_partials(source);
+            }
+            
+            return Mustache.to_html.apply(this, source, options, partials);
+        };
+    } else {
+        return source;   
+    }
+};
+
+exports.render = function (template, options) {
+    template = exports.compile(template, options);
+    
+    return template(options);
+};
