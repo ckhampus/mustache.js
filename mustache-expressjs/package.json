@@ -3,5 +3,6 @@
     "author": "http://mustache.github.com/",
     "description": "{{ mustache }} in JavaScript — Logic-less templates.",
     "keywords": ["template"],
-    "version": "{{version}}"
+    "version": "{{version}}",
+    "main": "./mustache"
 }
