@@ -28,7 +28,7 @@ var compile = exports.compile = function (source, options) {
                 while ((result = regex.exec(source)) !== null) {
                     partial = result[1].replace(/\s+/g, '');
                     
-                    if (partial === 'yield') {
+                    if (partial !== 'yield') {
                         partials[partial] = require('fs').readFileSync(
                             require('path').join(views, partial + extension), 'utf8');
                     }
