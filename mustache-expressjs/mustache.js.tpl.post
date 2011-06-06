@@ -7,6 +7,8 @@ exports.to_html = function() {
 };
 
 var compile = exports.compile = function (source, options) {
+    var views = (options && options.settings && options.settings.views) || './views';
+    
     if (typeof source === 'string') {
         return function (options) {
             var partials = {},
@@ -28,8 +30,7 @@ var compile = exports.compile = function (source, options) {
                     
                     if (partial === 'yield') {
                         partials[partial] = fs.readFileSync(
-                            path.join(options.settings.views,
-                            partial + extension), 'utf8');
+                            path.join(views,partial + extension), 'utf8');
                     }
                 }
                 
